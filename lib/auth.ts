@@ -5,7 +5,6 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { Adapter } from "next-auth/adapters";
 import { accounts, sessions, users, verificationTokens } from "./schema";
 
-const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 export const authOptions: NextAuthOptions = {
   providers: [
     GitHubProvider({
@@ -17,7 +16,6 @@ export const authOptions: NextAuthOptions = {
         }
       },
       profile(profile, tokens) {
-        console.log('GitHub profile:', JSON.stringify(profile, null, 2));
         return (async () => {
           let primaryEmail = null;
           try {
@@ -30,10 +28,7 @@ export const authOptions: NextAuthOptions = {
             });
             if (emailRes.ok) {
               const emails = await emailRes.json();
-              console.log('GitHub emails:', JSON.stringify(emails, null, 2));
               primaryEmail = emails.find((email: any) => email.primary)?.email || emails[0]?.email;
-            } else {
-              console.log('Failed to fetch GitHub emails:', await emailRes.text());
             }
           } catch (error) {
             console.error('Error fetching GitHub emails:', error);
@@ -55,6 +50,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: `/login`,
     verifyRequest: `/login`,
@@ -70,21 +66,21 @@ export const authOptions: NextAuthOptions = {
     // @ts-ignore - Type compatibility issues with DrizzleAdapter
     verificationTokensTable: verificationTokens,
   }) as Adapter,
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  // Force cookies to use same name in all environments
   cookies: {
     sessionToken: {
-      name: `${VERCEL_DEPLOYMENT ? "__Secure-" : ""}next-auth.session-token`,
+      name: "next-auth.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-        domain: VERCEL_DEPLOYMENT
-          ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
-          : undefined,
-        secure: VERCEL_DEPLOYMENT,
-      },
-    },
+        secure: process.env.NODE_ENV === "production"
+      }
+    }
   },
   callbacks: {
     jwt: async ({ token, user }) => {
@@ -94,13 +90,15 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-      session.user = {
-        ...session.user,
-        // @ts-expect-error
-        id: token.sub,
-        // @ts-expect-error
-        username: token?.user?.username || token?.user?.gh_username,
-      };
+      if (session.user) {
+        session.user = {
+          ...session.user,
+          // @ts-expect-error
+          id: token.sub,
+          // @ts-expect-error
+          username: token?.user?.username || token?.user?.gh_username,
+        };
+      }
       return session;
     },
   },

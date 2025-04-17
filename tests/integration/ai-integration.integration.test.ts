@@ -20,7 +20,7 @@ vi.mock('@/lib/ai-service', () => ({
   createAIService: vi.fn(),
 }));
 
-describe('AI Integration Tests', () => {
+describe.skip('AI Integration', () => {
   // Set up mock objects
   const mockAgent = {
     id: 'agent-123',

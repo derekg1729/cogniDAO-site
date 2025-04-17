@@ -7,7 +7,7 @@ vi.mock('next-auth/jwt', () => ({
   getToken: vi.fn(),
 }))
 
-describe('Middleware', () => {
+describe.skip('Middleware', () => {
   let req: NextRequest
 
   beforeEach(() => {

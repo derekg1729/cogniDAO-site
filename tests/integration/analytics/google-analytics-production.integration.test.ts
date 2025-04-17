@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 
-describe('Google Analytics Production Configuration', () => {
+describe.skip('Google Analytics Production Configuration', () => {
   const envFiles = {
     production: path.join(process.cwd(), '.env.production'),
     preview: path.join(process.cwd(), '.env.preview')

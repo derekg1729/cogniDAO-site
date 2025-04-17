@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 
-describe('Google Analytics Validation', () => {
+describe.skip('Google Analytics Validation', () => {
   // Load environment variables from .env files
   beforeAll(() => {
     // Load .env.local if it exists

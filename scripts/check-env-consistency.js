@@ -20,14 +20,12 @@ const ENV_FILES = [
 
 // Variables that must be consistent across environments
 const CONSISTENT_VARIABLES = [
-  'NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX',
   'NEXT_PUBLIC_GA_ID'
 ];
 
 // Variables required in all environments
 const REQUIRED_VARIABLES = [
   'NEXT_PUBLIC_ROOT_DOMAIN',
-  'NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX',
   'NEXTAUTH_SECRET',
   'AUTH_GITHUB_ID',
   'AUTH_GITHUB_SECRET',

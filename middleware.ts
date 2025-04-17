@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 export const config = {
   matcher: [
@@ -18,16 +17,25 @@ export default async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const { pathname } = url;
   const hostname = req.headers.get("host")!;
-
+  
   // 1. Handle authentication for app subdomains (all environments)
   if (hostname.startsWith('app.') || hostname.startsWith('app-')) {
-    const session = await getToken({ req });
-    if (!session && pathname !== "/login") {
+    // Look for session token cookie - NextAuth uses different names depending on environment
+    const sessionToken = 
+      req.cookies.get('next-auth.session-token')?.value || 
+      req.cookies.get('__Secure-next-auth.session-token')?.value || 
+      req.cookies.get('__Host-next-auth.session-token')?.value;
+    
+    // Simple protection - if no session token and not on login page, redirect to login
+    if (!sessionToken && !pathname.startsWith("/login") && !pathname.startsWith("/api/auth")) {
       return NextResponse.redirect(new URL("/login", req.url));
-    } else if (session && pathname === "/login") {
+    } 
+    // Have session token and on login page, redirect to root
+    else if (sessionToken && pathname === "/login") {
       return NextResponse.redirect(new URL("/", req.url));
     }
     
+    // Rewrite to app directory
     url.pathname = `/app${pathname === "/" ? "" : pathname}`;
     return NextResponse.rewrite(url);
   }
@@ -56,9 +64,11 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect("https://vercel.com/blog/platforms-starter-kit");
   }
 
-  // 4. Root domain handling
-  if (hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
-    url.pathname = pathname === "/" ? "/home" : pathname;
+  // 4. Hardcoded root domain handling. NEXT_PUBLIC_ROOT_DOMAIN is not working.
+  const rootDomains = ['cognidao.org', 'www.cognidao.org'];
+
+  if (rootDomains.includes(hostname)) {
+    url.pathname = pathname === '/' ? '/home' : pathname;
     return NextResponse.rewrite(url);
   }
 
