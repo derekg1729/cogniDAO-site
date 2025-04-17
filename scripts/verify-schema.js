@@ -20,7 +20,10 @@ const isVercelDeployment = process.env.VERCEL === '1';
 async function verifySchema() {
   // Create a direct postgres client
   const client = new Client({
-    connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL
+    connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false // This allows self-signed certificates
+    }
   });
 
   try {

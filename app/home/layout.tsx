@@ -1,18 +1,18 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Enhanced Platform Starter Kit - Multi-Tenant Platform with Tests & Analytics",
-  description: "A production-ready starter kit for building multi-tenant applications with Next.js, featuring comprehensive test coverage, Google Analytics integration, and modern development practices.",
+  title: "CogniDAO - Knowledge Collective",
+  description: "A collaborative platform for knowledge sharing and community-driven insights with advanced AI capabilities.",
   openGraph: {
-    title: "Enhanced Platform Starter Kit - Multi-Tenant Platform with Tests & Analytics",
-    description: "Build your own multi-tenant platform with comprehensive test coverage, Google Analytics integration, and modern development practices.",
+    title: "CogniDAO - Knowledge Collective",
+    description: "Join the knowledge collective for community-driven insights and collaborative knowledge sharing.",
     url: "https://wackywavelength.fyi",
-    siteName: "Enhanced Platform Starter Kit",
+    siteName: "CogniDAO",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Enhanced Platform Starter Kit - Multi-Tenant Platform with Tests & Analytics",
-    description: "Build your own multi-tenant platform with comprehensive test coverage, Google Analytics integration, and modern development practices.",
+    title: "CogniDAO - Knowledge Collective",
+    description: "Join the knowledge collective for community-driven insights and collaborative knowledge sharing.",
   },
 };
 

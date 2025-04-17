@@ -24,7 +24,10 @@ async function runDeploymentMigrations() {
   console.log('🔍 Running deployment-specific migrations...');
   
   const client = new Client({
-    connectionString
+    connectionString,
+    ssl: {
+      rejectUnauthorized: false // This allows self-signed certificates
+    }
   });
 
   try {
