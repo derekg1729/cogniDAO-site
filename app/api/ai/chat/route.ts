@@ -1,4 +1,6 @@
 import { openai } from '@ai-sdk/openai';
+import type { ChatRequest } from '@/schemas/chatrequest';
+import { createChatRequest, validateChatRequest } from '@/utils/validateInput';
 
 /**
  * Chat API Route
@@ -11,7 +13,6 @@ import { openai } from '@ai-sdk/openai';
  * Forwards requests to FastAPI server and streams responses back to client.
  * Includes error handling for JSON parsing and API communication.
  */
-
 
 export async function POST(req: Request) {
   try {
@@ -28,27 +29,45 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 });
     }
     
-    // Get the message from either format
-    let message = '';
+    // Create a validated ChatRequest object
+    let requestBody: ChatRequest;
     
-    if (body.message) {
-      // If message is directly provided
-      message = body.message;
+    // Check if the body already matches the ChatRequest format
+    if (body.message && typeof body.message === 'string') {
+      try {
+        // Validate and create using utility function
+        requestBody = createChatRequest(body.message, { stream: body.stream });
+      } catch (e) {
+        console.error("Validation error:", e);
+        return Response.json({ error: 'Invalid request format' }, { status: 400 });
+      }
     } else if (body.messages && Array.isArray(body.messages) && body.messages.length > 0) {
-      // Extract from messages array if available
+      // Extract from messages array format
       const lastMessage = body.messages[body.messages.length - 1];
-      message = lastMessage.content || lastMessage.text || '';
+      const messageText = lastMessage.content || lastMessage.text || '';
+      
+      if (!messageText) {
+        return Response.json({ error: 'No message content found' }, { status: 400 });
+      }
+      
+      try {
+        // Validate and create using utility function
+        requestBody = createChatRequest(messageText, { stream: body.stream });
+      } catch (e) {
+        console.error("Validation error:", e);
+        return Response.json({ error: 'Invalid request format' }, { status: 400 });
+      }
     } else {
-      // Fallback for empty request
+      // No valid format found
       console.error("No valid message found in request");
-      throw new Error('No message provided');
+      return Response.json({ error: 'No message provided' }, { status: 400 });
     }
 
     // Forward message to FastAPI with the correct schema
     const response = await fetch('http://localhost:8000/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message: requestBody.message }),
     });
 
     if (!response.ok) {
