@@ -23,7 +23,8 @@
     "check-env": "node scripts/check-env-consistency.js",
     "verify-schema": "node scripts/verify-schema.js",
     "deployment-migrations": "node scripts/run-deployment-migrations.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check-edge": "ts-node scripts/check-no-edge.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -109,6 +110,7 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "tailwindcss": "^3.3.5",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "vitest": "^3.0.8"
   }
