@@ -6,8 +6,9 @@ export async function POST(req: Request) {
     
     const body = await req.json();
     console.log("Received message:", body);
-    const { message } = body;
+    const message = body
 
+    /* Comment out mock response section
     // For testing purposes, we'll return a mock response
     // In production, you would connect to your FastAPI backend
     const mockResponses = [
@@ -26,8 +27,8 @@ export async function POST(req: Request) {
     await new Promise((resolve) => setTimeout(resolve, 500))
 
     return NextResponse.json({ response: randomResponse })
+    */
 
-    /* Uncomment this when your FastAPI backend is ready
     // For streaming implementation, you would use:
     // - Response.json() with a TransformStream for Server-Sent Events
     // - or a dedicated WebSocket connection
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message: message.message }),
     })
 
     if (!response.ok) {
@@ -47,7 +48,6 @@ export async function POST(req: Request) {
 
     const data = await response.json()
     return NextResponse.json({ response: data.response })
-    */
   } catch (error) {
     console.error("Error in chat API route:", error)
     return NextResponse.json({ error: "Failed to process request" }, { status: 500 })
