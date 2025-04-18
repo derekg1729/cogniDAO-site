@@ -66,7 +66,10 @@ export async function POST(req: Request) {
     // Forward message to FastAPI with the correct schema
     const response = await fetch('http://localhost:8000/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.COGNI_HOME_API_KEY}`
+      },
       body: JSON.stringify({ message: requestBody.message }),
     });
 
