@@ -1,0 +1,57 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+{
+  "name": "Document Every Interface as JSON",
+  "description": "All inputs, outputs, workflows, and configurations in Cogni should be documented as structured JSON schemas or examples. These schemas serve as the ground truth for AI agents, testing, validation, and developer understanding.",
+  "when_to_apply": [
+    "Creating or modifying an API route",
+    "Defining an agent config",
+    "Creating memory block formats",
+    "Designing workflow steps",
+    "Emitting tool input/output"
+  ],
+  "actions": [
+    {
+      "target": "API route",
+      "output": "schemas/api/{route}.schema.json"
+    },
+    {
+      "target": "Agent config",
+      "output": "agents/{agent_name}/config.json"
+    },
+    {
+      "target": "Memory block",
+      "output": "schemas/memory/{type}.schema.json"
+    },
+    {
+      "target": "Workflow step/config",
+      "output": "schemas/flows/{flow_name}.json"
+    },
+    {
+      "target": "Structured input/output",
+      "output": ".schema.json",
+      "tools": ["pydantic", "zod", "jsonschema"]
+    }
+  ],
+  "example_structure": {
+    "schemas": {
+      "api": ["chat_post.schema.json"],
+      "memory": ["thought_block.schema.json"],
+      "flows": ["ritual_of_presence.schema.json"]
+    },
+    "agents": {
+      "core_cogni": ["config.json"]
+    }
+  },
+  "tools": {
+    "Type-safe JSON schema in code (TS)": "zod + zod-to-json-schema",
+    "Type-safe JSON schema in code (Python)": "pydantic",
+    "Extract schema from code": ["typescript-json-schema", "pydantic.schema()"],
+    "Validate runtime JSON": ["ajv (JS)", "jsonschema (Python)"],
+    "Human-readable UI docs": ["Swagger UI", "custom Markdown generation"],
+    "Version control tips": "Use .json and .jsonl format with stable keys"
+  }
+}

@@ -8,6 +8,8 @@ import { Message, MessageComponent, MessageRole } from "./Message";
 import { SuggestedActions } from "./SuggestedActions";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn, generateUUID } from "../lib/utils";
+import type { ChatRequest } from "@/schemas/chatrequest";
+import { createChatRequest } from "@/utils/validateInput";
 
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -97,16 +99,16 @@ export default function Chat() {
     isStreamingRef.current = true;
 
     try {
+      // Create a validated request payload
+      const chatRequest: ChatRequest = createChatRequest(userMessage, { stream: true });
+      
       // Send the request to the API with streaming enabled
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          message: userMessage,
-          stream: true 
-        }),
+        body: JSON.stringify(chatRequest),
         cache: 'no-store',
       });
 
