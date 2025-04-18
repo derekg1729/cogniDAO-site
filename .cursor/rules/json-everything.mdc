@@ -4,54 +4,34 @@ globs:
 alwaysApply: true
 ---
 {
-  "name": "Document Every Interface as JSON",
-  "description": "All inputs, outputs, workflows, and configurations in Cogni should be documented as structured JSON schemas or examples. These schemas serve as the ground truth for AI agents, testing, validation, and developer understanding.",
+  "name": "Use Typed + Validated Schemas for All AI Inputs",
+  "description": "All data sent to or received from backend/AI APIs must use generated TypeScript types and optionally validate against corresponding JSON Schemas.",
   "when_to_apply": [
-    "Creating or modifying an API route",
-    "Defining an agent config",
-    "Creating memory block formats",
-    "Designing workflow steps",
-    "Emitting tool input/output"
+    "Sending a payload to an AI API route",
+    "Consuming an AI-generated or streamed response",
+    "Constructing or validating a ChatRequest"
   ],
   "actions": [
     {
-      "target": "API route",
-      "output": "schemas/api/{route}.schema.json"
+      "target": "API request payloads",
+      "require": "Import generated types from `schemas/*.d.ts` and construct using helpers like `createChatRequest()`"
     },
     {
-      "target": "Agent config",
-      "output": "agents/{agent_name}/config.json"
-    },
-    {
-      "target": "Memory block",
-      "output": "schemas/memory/{type}.schema.json"
-    },
-    {
-      "target": "Workflow step/config",
-      "output": "schemas/flows/{flow_name}.json"
-    },
-    {
-      "target": "Structured input/output",
-      "output": ".schema.json",
-      "tools": ["pydantic", "zod", "jsonschema"]
+      "target": "Optional runtime validation",
+      "require": "Use `validateChatRequest()` from `utils/validateInput.ts` to ensure shape matches JSON Schema"
     }
   ],
-  "example_structure": {
-    "schemas": {
-      "api": ["chat_post.schema.json"],
-      "memory": ["thought_block.schema.json"],
-      "flows": ["ritual_of_presence.schema.json"]
-    },
-    "agents": {
-      "core_cogni": ["config.json"]
+  "tools": {
+    "Type-safe types": "Generated with `json-schema-to-typescript` into `schemas/*.d.ts`",
+    "Runtime validation": {
+      "tool": "ajv",
+      "helper": "validateInput.ts",
+      "input": ".schema.json files"
     }
   },
-  "tools": {
-    "Type-safe JSON schema in code (TS)": "zod + zod-to-json-schema",
-    "Type-safe JSON schema in code (Python)": "pydantic",
-    "Extract schema from code": ["typescript-json-schema", "pydantic.schema()"],
-    "Validate runtime JSON": ["ajv (JS)", "jsonschema (Python)"],
-    "Human-readable UI docs": ["Swagger UI", "custom Markdown generation"],
-    "Version control tips": "Use .json and .jsonl format with stable keys"
-  }
+  "rules": [
+    "Never construct AI request objects manually — use `createChatRequest()`",
+    "Only commit `.d.ts` files into the frontend repo — `.schema.json` is optional and only if ajv is used",
+    "If schema changes in backend, rerun schema sync and replace local definitions"
+  ]
 }
