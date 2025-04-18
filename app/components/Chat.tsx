@@ -13,8 +13,22 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [userRequestedStop, setUserRequestedStop] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Create refs to track state in async contexts
+  const isStreamingRef = useRef(false);
+  const userRequestedStopRef = useRef(false);
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    isStreamingRef.current = isStreaming;
+  }, [isStreaming]);
+  
+  useEffect(() => {
+    userRequestedStopRef.current = userRequestedStop;
+  }, [userRequestedStop]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -41,7 +55,10 @@ export default function Chat() {
   };
 
   const stopStreaming = () => {
-    setIsStreaming(false);
+    setUserRequestedStop(true);
+    userRequestedStopRef.current = true;
+    
+    // Mark messages as not streaming
     setMessages(messages => messages.map(message => ({
       ...message,
       isStreaming: false
@@ -49,9 +66,11 @@ export default function Chat() {
   };
 
   const sendMessage = async (userMessage: string) => {
-    if (!userMessage.trim()) return;
+    // Reset the user stop flag at the beginning of a new message
+    setUserRequestedStop(false);
+    userRequestedStopRef.current = false;
     
-    console.log("Sending message:", userMessage);
+    if (!userMessage.trim()) return;
     
     // Add user message to chat
     const newUserMessage: Message = {
@@ -75,75 +94,70 @@ export default function Chat() {
     
     setMessages(prev => [...prev, placeholderMessage]);
     setIsStreaming(true);
+    isStreamingRef.current = true;
 
     try {
-      // Send the request to the API
-      console.log("Calling API endpoint at:", "/api/ai/chat");
-      
+      // Send the request to the API with streaming enabled
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ 
+          message: userMessage,
+          stream: true 
+        }),
+        cache: 'no-store',
       });
 
-      console.log("API response status:", response.status);
-      
       if (!response.ok) {
         throw new Error(`Failed to get response: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
-      console.log("API response data:", data);
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error("No response body reader available");
+      }
+
+      // Read the stream
+      const decoder = new TextDecoder();
+      let streamedContent = "";
       
-      // Simplify: update the message immediately first, then simulate streaming
-      // This ensures the content appears even if streaming fails
-      const fullResponse = data.response;
-      console.log("Response content to stream:", fullResponse, typeof fullResponse);
+      while (isStreamingRef.current && !userRequestedStopRef.current) {
+        try {
+          const { done, value } = await reader.read();
+          
+          if (done) break;
+          
+          // Decode the chunk and process it
+          const chunk = decoder.decode(value, { stream: true });
+          
+          // Simply append the chunk directly to streamedContent
+          streamedContent += chunk;
+          
+          // Update the UI with each chunk
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === assistantMessageId 
+                ? { ...msg, content: streamedContent }
+                : msg
+            )
+          );
+        } catch (error) {
+          console.error("Error reading stream:", error);
+          break;
+        }
+      }
       
-      // First update with full response
+      // Mark streaming as complete
       setMessages(prev => 
         prev.map(msg => 
-          msg.id === assistantMessageId 
-            ? { ...msg, content: fullResponse, isStreaming: false }
+          msg.id === assistantMessageId
+            ? { ...msg, isStreaming: false }
             : msg
         )
       );
-      
-      /* Commented out streaming for troubleshooting
-      let streamedContent = "";
-      for (let i = 0; i < fullResponse.length; i++) {
-        if (!isStreaming) break; // Allow stopping mid-stream
-        
-        streamedContent += fullResponse[i];
-        
-        // Add debug logging for a single iteration
-        if (i === 0) {
-          console.log("First char:", fullResponse[i], "Updated content:", streamedContent);
-          console.log("Finding message with ID:", assistantMessageId);
-        }
-        
-        setMessages(prev => {
-          const updatedMessages = prev.map(msg => 
-            msg.id === assistantMessageId 
-              ? { ...msg, content: streamedContent }
-              : msg
-          );
-          
-          // Debug the state update for the first character
-          if (i === 0) {
-            console.log("Message found?", updatedMessages.some(m => m.id === assistantMessageId));
-            console.log("Updated messages:", updatedMessages);
-          }
-          
-          return updatedMessages;
-        });
-        
-        // Add a small delay to simulate streaming
-        await new Promise(resolve => setTimeout(resolve, 15));
-      }
-      */
       
     } catch (error) {
       console.error("Error details:", error);
@@ -155,14 +169,13 @@ export default function Chat() {
         )
       );
     } finally {
+      // Only set isStreaming to false here, after all stream processing is complete
       setIsStreaming(false);
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === assistantMessageId
-            ? { ...msg, isStreaming: false }
-            : msg
-        )
-      );
+      isStreamingRef.current = false;
+      
+      // Reset the user stop flag
+      setUserRequestedStop(false);
+      userRequestedStopRef.current = false;
     }
   };
 
@@ -177,6 +190,17 @@ export default function Chat() {
     if (isStreaming) return;
     sendMessage(input);
   };
+
+  // Add this at the top of your component:
+  useEffect(() => {
+    // Initialize the flag
+    setUserRequestedStop(false);
+    
+    // Clean up
+    return () => {
+      delete window.userRequestedStop;
+    };
+  }, []);
 
   return (
     <div className="cogni-panel w-full max-w-2xl flex flex-col h-[500px]">
