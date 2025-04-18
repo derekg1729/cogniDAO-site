@@ -54,7 +54,7 @@ importers:
         specifier: ^0.7.1
         version: 0.7.1
       clsx:
-        specifier: ^2.0.0
+        specifier: ^2.1.1
         version: 2.1.1
       date-fns:
         specifier: ^2.30.0
@@ -66,7 +66,7 @@ importers:
         specifier: ^10.2.3
         version: 10.3.1(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       framer-motion:
-        specifier: ^10.16.4
+        specifier: ^10.18.0
         version: 10.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       gray-matter:
         specifier: ^4.0.3
@@ -123,7 +123,7 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@18.3.1)
       tailwind-merge:
-        specifier: ^2.0.0
+        specifier: ^2.6.0
         version: 2.6.0
       unist-util-visit:
         specifier: ^5.0.0

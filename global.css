@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer components {
+  .cogni-layout {
+    @apply flex min-h-screen flex-col;
+  }
+
+  .cogni-background {
+    @apply absolute inset-0 bg-gradient-to-br from-cogni-background via-cogni-highlight/30 to-cogni-accent/40 opacity-95 z-0;
+  }
+
+  .cogni-background-pattern {
+    @apply absolute inset-0 bg-[url('/cogni-spire.png')] bg-cover bg-center opacity-30 z-0;
+  }
+
+  .cogni-container {
+    @apply relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-16;
+  }
+
+  .cogni-panel {
+    @apply w-full rounded-xl border border-cogni-border bg-cogni-panel backdrop-blur-md overflow-hidden;
+  }
+
+  .cogni-panel-header {
+    @apply p-4 border-b border-cogni-border bg-cogni-accent/20;
+  }
+
+  .cogni-panel-title {
+    @apply font-cal text-xl text-white;
+  }
+
+  .cogni-panel-content {
+    @apply flex-1 p-4;
+  }
+
+  .cogni-panel-footer {
+    @apply p-4 border-t border-cogni-border bg-cogni-accent/20;
+  }
+
+  .cogni-button-primary {
+    @apply rounded-lg bg-cogni-accent px-6 py-3 font-cal text-white transition-all hover:bg-cogni-accent/80 hover:shadow-lg transform hover:-translate-y-1;
+  }
+
+  .cogni-button-secondary {
+    @apply rounded-lg border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 font-cal text-white transition-all hover:bg-white/20 hover:shadow-lg transform hover:-translate-y-1;
+  }
+
+  .cogni-message-user {
+    @apply max-w-[80%] rounded-lg px-4 py-2 bg-cogni-accent text-white;
+  }
+
+  .cogni-message-assistant {
+    @apply max-w-[80%] rounded-lg px-4 py-2 bg-cogni-panel border border-cogni-border text-white;
+  }
+
+  .cogni-input {
+    @apply flex-1 bg-black/30 border-cogni-border text-white placeholder:text-white/50;
+  }
+
+  .cogni-footer {
+    @apply relative z-10 border-t border-cogni-border py-8 text-center bg-black/60 backdrop-blur-md;
+  }
+}

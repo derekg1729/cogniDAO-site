@@ -1,6 +1,7 @@
 import { InlineSnippet } from "@/components/form/domain-configuration";
 import Image from "next/image";
 import Link from "next/link";
+import Chat from "../components/Chat";
 
 export default function HomePage() {
   // Using NEXTAUTH_URL for development and constructing production URL from ROOT_DOMAIN
@@ -22,35 +23,15 @@ export default function HomePage() {
             height={512}
             src="/CogniBrainTransparent.png"
             alt="CogniDAO"
-            className="w-64 mx-auto mb-6"
+            priority
+            className="w-64 mx-auto"
           />
-          <div className="max-w-2xl space-y-4">
-            <h1 className="font-cal text-4xl font-bold text-white sm:text-5xl">
-              CogniDAO Platform
-              <span className="block text-2xl mt-2 text-indigo-300">Knowledge Collective</span>
-            </h1>
-            <p className="text-lg text-white/80">
-              Communcally building tools to empower communities.
-              <br />
-              Use Cogni to spawn your own AI-powered organization.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row mt-8 justify-center">
-            <a
-              href={loginUrl}
-              className="rounded-lg bg-indigo-600 px-6 py-3 font-cal text-white transition-all hover:bg-indigo-700 hover:shadow-lg transform hover:-translate-y-1"
-            >
-              Login
-            </a>
-            <a
-              href="https://github.com/derekg1729/agent-platform"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 font-cal text-white transition-all hover:bg-white/20 hover:shadow-lg transform hover:-translate-y-1"
-            >
-              View Source
-            </a>
-          </div>
+          <h1 className="font-cal text-4xl font-bold text-white sm:text-5xl">
+            <span className="block text-2xl text-indigo-300">Knowledge Collective</span>
+          </h1>
+          
+          {/* Chat Component */}
+          <Chat />
         </div>
       </div>
 
