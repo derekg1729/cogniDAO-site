@@ -189,6 +189,9 @@ importers:
       eslint-config-next:
         specifier: ^14.0.2
         version: 14.2.24(eslint@8.53.0)(typescript@5.8.2)
+      eslint-plugin-custom-rules:
+        specifier: link:eslint-plugin-custom-rules
+        version: link:eslint-plugin-custom-rules
       glob:
         specifier: ^11.0.1
         version: 11.0.1

@@ -8,15 +8,16 @@ const glob = require('glob');
 const fs = require('fs/promises');
 
 // Edge patterns - only look for explicit edge runtime declarations
+// @ts-nocheck - ignore these strings for edge pattern detection
 const PATTERNS = [
   "export const runtime = 'edge'",
-  "export const runtime = \"edge\"",
+  'export const runtime = "edge"',
   "from 'openai-edge'",
   "import OpenAI from 'openai-edge'",
   "from '@vercel/blob'",
-  "from \"@vercel/blob\"",
+  'from "@vercel/blob"',
   "import { put } from '@vercel/blob'",
-  "import { put } from \"@vercel/blob\""
+  'import { put } from "@vercel/blob"'
 ];
 
 async function main() {
@@ -27,6 +28,7 @@ async function main() {
       'node_modules/**', 
       '.next/**', 
       'scripts/check-no-edge.ts',
+      'scripts/check-no-edge.js',
       'tests/**',
       'eslint-plugin-custom-rules/**'
     ]

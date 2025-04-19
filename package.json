@@ -13,7 +13,8 @@
     "test:coverage": "vitest run --coverage",
     "test:build": "vitest run tests/build.test.ts",
     "test:ci": "vitest run --typecheck",
-    "test:all": "npm run typecheck && npm run lint && npm run test",
+    "test:all": "npm run typecheck && npm run lint && npm run test && npm run check-edge",
+    "test:edge": "vitest run tests/edge-runtime.test.ts",
     "test:ga": "vitest run --typecheck --pool=forks tests/unit/analytics/google-analytics*.unit.test.* tests/unit/analytics/page-view-tracker.unit.test.tsx tests/integration/analytics/google-analytics*.integration.test.*",
     "test:ga:build": "RUN_BUILD_TESTS=true vitest run --typecheck --pool=forks tests/integration/analytics/google-analytics-build.integration.test.ts",
     "test:ga:deployment": "RUN_DEPLOYMENT_TESTS=true vitest run --typecheck --pool=forks tests/integration/analytics/google-analytics-deployment.integration.test.ts",
@@ -24,7 +25,7 @@
     "verify-schema": "node scripts/verify-schema.js",
     "deployment-migrations": "node scripts/run-deployment-migrations.js",
     "prepare": "husky",
-    "check-edge": "ts-node scripts/check-no-edge.ts"
+    "check-edge": "npx ts-node scripts/check-no-edge.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -98,6 +99,7 @@
     "drizzle-kit": "^0.22.5",
     "eslint": "8.53.0",
     "eslint-config-next": "^14.0.2",
+    "eslint-plugin-custom-rules": "link:eslint-plugin-custom-rules",
     "glob": "^11.0.1",
     "husky": "^9.0.11",
     "jsdom": "^26.0.0",
