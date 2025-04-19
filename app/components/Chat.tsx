@@ -34,7 +34,10 @@ export default function Chat() {
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = document.querySelector('.cogni-panel-content');
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -67,7 +70,7 @@ export default function Chat() {
     })));
   };
 
-  const sendMessage = async (userMessage: string) => {
+  const sendMessage = useCallback(async (userMessage: string) => {
     // Reset the user stop flag at the beginning of a new message
     setUserRequestedStop(false);
     userRequestedStopRef.current = false;
@@ -179,7 +182,7 @@ export default function Chat() {
       setUserRequestedStop(false);
       userRequestedStopRef.current = false;
     }
-  };
+  }, []);
 
   // Define this after sendMessage so we can include it in dependencies
   const handleSuggestionClick = useCallback((suggestion: string) => {
