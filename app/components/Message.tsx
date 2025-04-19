@@ -22,39 +22,45 @@ export function MessageComponent({
 }) {
   return (
     <div
-      className="w-full mx-auto max-w-3xl px-4 group/message"
+      className="w-full" 
       data-role={message.role}
     >
       <div
         className={cn(
-          'flex gap-4 w-full',
+          'flex gap-3',
           message.role === 'user' ? 'justify-end' : 'justify-start',
         )}
       >
         {message.role === 'assistant' && (
-          <div className="size-8 flex items-center rounded-full justify-center shrink-0 bg-indigo-600/20 border border-indigo-500/30 text-white">
-            <SparklesIcon size={16} />
+          <div className="size-8 flex items-center justify-center shrink-0">
+            <div className="text-white w-7 h-7 flex items-center justify-center">
+              <SparklesIcon size={16} />
+            </div>
           </div>
         )}
 
-        <div className="flex flex-col gap-2 max-w-[80%]">
+        <div className={cn('flex flex-col max-w-[85%]', 
+          message.role === 'user' ? 'items-end' : 'items-start'
+        )}>
           <div
             data-testid="message-content"
-            className={cn('flex flex-col gap-2 px-4 py-3 rounded-xl', {
-              'bg-indigo-600 text-white': message.role === 'user',
-              'bg-black/40 border border-indigo-500/30 text-white': message.role === 'assistant',
+            className={cn('px-0 py-0', {
+              'text-white': message.role === 'user',
+              'text-gray-300': message.role === 'assistant',
             })}
           >
             {message.content}
             {message.isStreaming && (
-              <span className="ml-1 inline-block w-2 h-4 bg-white/60 animate-pulse"/>
+              <span className="ml-1 inline-block w-2 h-4 bg-gray-400 animate-pulse"/>
             )}
           </div>
         </div>
 
         {message.role === 'user' && (
-          <div className="size-8 flex items-center rounded-full justify-center shrink-0 bg-indigo-600/20 border border-indigo-500/30 text-white">
-            <UserIcon size={16} />
+          <div className="size-8 flex items-center justify-center shrink-0">
+            <div className="text-white w-7 h-7 flex items-center justify-center">
+              <UserIcon size={16} />
+            </div>
           </div>
         )}
       </div>

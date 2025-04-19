@@ -208,18 +208,18 @@ export default function Chat() {
   }, []);
 
   return (
-    <div className="cogni-panel w-full max-w-2xl flex flex-col h-[500px]">
+    <div className="w-full flex flex-col h-[600px] rounded-lg overflow-hidden border border-gray-800">
       
-      <div className="cogni-panel-content flex-1 overflow-y-auto flex flex-col space-y-4 p-2">
+      <div className="flex-1 overflow-y-auto flex flex-col space-y-4 p-4 bg-black">
         <AnimatePresence>
           {messages.length === 0 ? (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex-1 flex flex-col gap-6 items-center justify-center text-white/60 p-4"
+              className="flex-1 flex flex-col gap-6 items-center justify-center text-gray-400 p-4"
             >
-              <p className="text-center text-lg">Ask a question about CogniDAO or try a suggestion below</p>
+              <p className="text-center text-lg">Ask a question or try a suggestion below</p>
               <SuggestedActions onSuggestionClick={handleSuggestionClick} />
             </motion.div>
           ) : (
@@ -235,14 +235,14 @@ export default function Chat() {
         <div ref={messagesEndRef} />
       </div>
       
-      <div className="cogni-panel-footer p-4">
+      <div className="p-4 border-t border-gray-800 bg-black">
         <form onSubmit={handleSubmit} className="relative">
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="pr-12 resize-none min-h-[56px] max-h-[200px] overflow-y-auto"
+            placeholder="Send a message..."
+            className="resize-none min-h-[56px] max-h-[200px] pr-12 bg-gray-900 border-gray-700 rounded-full py-3.5 px-4 text-white placeholder:text-gray-400 focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
             disabled={isStreaming}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -254,13 +254,13 @@ export default function Chat() {
             }}
           />
           
-          <div className="absolute right-3 bottom-3">
+          <div className="absolute right-3 bottom-[13px]">
             {isStreaming ? (
               <Button
                 type="button"
-                variant="cogni"
+                variant="ghost"
                 size="icon"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 rounded-full hover:bg-gray-700 text-gray-400"
                 onClick={stopStreaming}
                 aria-label="Stop generating"
               >
@@ -269,9 +269,9 @@ export default function Chat() {
             ) : (
               <Button
                 type="submit"
-                variant="cogni"
+                variant="ghost"
                 size="icon"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white"
                 disabled={!input.trim()}
                 aria-label="Send message"
               >
