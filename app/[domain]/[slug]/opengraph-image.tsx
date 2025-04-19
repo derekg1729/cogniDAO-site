@@ -4,8 +4,6 @@ import { truncate } from "@/lib/utils";
 import { ImageResponse } from "next/og";
 import { sql } from "@vercel/postgres";
 
-export const runtime = "edge";
-
 export default async function PostOG({
   params,
 }: {

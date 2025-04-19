@@ -7,10 +7,11 @@ import {
   validDomainRegex,
 } from "@/lib/domains";
 import { getBlurDataURL } from "@/lib/utils";
-import { put } from "@vercel/blob";
+import { writeFile } from "fs/promises";
 import { eq, and } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
 import { revalidateTag } from "next/cache";
+import path from "path";
 import { withPostAuth, withSiteAuth } from "./auth";
 import db from "./db";
 import { SelectPost, SelectSite, posts, sites, users, agents, apiConnections } from "./schema";
@@ -129,19 +130,25 @@ export const updateSite = withSiteAuth(
           */
         }
       } else if (key === "image" || key === "logo") {
-        if (!process.env.BLOB_READ_WRITE_TOKEN) {
-          return {
-            error:
-              "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – please fill out this form for access: https://tally.so/r/nPDMNd",
-          };
-        }
-
         const file = formData.get(key) as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
-
-        const { url } = await put(filename, file, {
-          access: "public",
-        });
+        
+        // Save to public/uploads directory
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        await import("fs").then(fs => 
+          fs.promises.mkdir(uploadDir, { recursive: true })
+        );
+        
+        // Convert file to buffer
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        
+        // Write the file
+        const filePath = path.join(uploadDir, filename);
+        await writeFile(filePath, buffer);
+        
+        // Create URL
+        const url = `/uploads/${filename}`;
 
         const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
@@ -317,9 +324,22 @@ export const updatePostMetadata = withPostAuth(
         const file = formData.get("image") as File;
         const filename = `${nanoid()}.${file.type.split("/")[1]}`;
 
-        const { url } = await put(filename, file, {
-          access: "public",
-        });
+        // Save to public/uploads directory
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        await import("fs").then(fs => 
+          fs.promises.mkdir(uploadDir, { recursive: true })
+        );
+        
+        // Convert file to buffer
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        
+        // Write the file
+        const filePath = path.join(uploadDir, filename);
+        await writeFile(filePath, buffer);
+        
+        // Create URL
+        const url = `/uploads/${filename}`;
 
         const blurhash = await getBlurDataURL(url);
         response = await db
