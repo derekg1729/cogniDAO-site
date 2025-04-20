@@ -9,6 +9,7 @@ interface SuggestedActionsProps {
 }
 
 function PureSuggestedActions({ onSuggestionClick }: SuggestedActionsProps) {
+  console.log("[SuggestedActions] Rendering component.");
   const suggestedActions = [
     {
       title: 'What is',

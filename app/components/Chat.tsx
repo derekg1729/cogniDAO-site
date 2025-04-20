@@ -207,6 +207,8 @@ export default function Chat() {
     };
   }, []);
 
+  console.log("[Chat] Rendering component. Messages count:", messages.length); // Log Chat render
+
   return (
     <div className="w-full flex flex-col h-[600px] rounded-lg overflow-hidden border border-gray-800">
       
