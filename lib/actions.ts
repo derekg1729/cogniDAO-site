@@ -15,8 +15,9 @@ import path from "path";
 import { withPostAuth, withSiteAuth } from "./auth";
 import db from "./db";
 import { SelectPost, SelectSite, posts, sites, users, agents, apiConnections } from "./schema";
-import { createAIService } from './ai-service';
+import { createAIService, sendMessageToAI } from './ai-service';
 import { getApiConnectionByService } from './db-access';
+import type { Message } from './ai-service';
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -527,81 +528,74 @@ export const getAgent = async (id: string) => {
 /**
  * Send a message to an agent and get a response from the AI model
  */
-export const sendMessage = async (agentId: string, message: string) => {
-  try {
-    const session = await getSession();
-    if (!session?.user.id) {
-      return {
-        error: "Not authenticated",
-      };
-    }
-
-    // Get the agent
-    const agent = await getAgent(agentId);
-    if (!agent) {
-      return {
-        error: "Agent not found",
-      };
-    }
-
-    // Check if the agent belongs to the user
-    if (agent.userId !== session.user.id) {
-      return {
-        error: "You don't have permission to use this agent",
-      };
-    }
-
-    // Determine which service to use based on the model
-    const service = agent.model.startsWith('gpt') ? 'openai' : 
-                    agent.model.startsWith('claude') ? 'anthropic' : '';
-    
-    // Get the API connection for the service
-    const apiConnection = await getApiConnectionByService(service, session.user.id);
-    if (!apiConnection) {
-      return {
-        error: "No API key found for this model. Please add an API key in your settings.",
-      };
-    }
-
-    // Create an AI service instance
-    const aiService = await createAIService(agent.model, apiConnection.encryptedApiKey);
-    
-    // Use custom instructions if available, otherwise use a default system prompt
-    const systemPrompt = agent.instructions || (agent.description 
-      ? `You are ${agent.name}, ${agent.description}`
-      : `You are ${agent.name}, a helpful AI assistant.`);
-    
-    // Format the messages
-    const messages = [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: message }
-    ];
-    
-    // Generate a response from the AI service
-    try {
-      const aiResponse = await aiService.generateChatResponse(messages, {
-        temperature: agent.temperature || 0.7,
-        maxTokens: 1000,
-      });
-      
-      // Format the response
-      const response = {
-        id: nanoid(),
-        role: "assistant",
-        content: aiResponse.content,
-      };
-      
-      return response;
-    } catch (error) {
-      console.error("Error generating AI response:", error);
-      return {
-        error: `Failed to generate AI response: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      };
-    }
-  } catch (error) {
-    console.error("Error sending message:", error);
+export const sendMessage = async (
+  agentId: string, 
+  messageContent: string,
+  messageHistory: Message[]
+) => {
+  const session = await getSession();
+  if (!session?.user.id) {
     return {
-      error: "Failed to send message",
+      error: "Not authenticated",
+    };
+  }
+
+  console.log("[sendMessage Action] Received messageContent:", messageContent);
+  console.log("[sendMessage Action] Received messageHistory:", JSON.stringify(messageHistory, null, 2));
+
+  try {
+    // Get agent details and API connection
+    const agent = await getAgent(agentId);
+
+    if (!agent) {
+      return { error: "Agent not found" };
+    }
+
+    // Determine the service based on the agent's model
+    let serviceType: 'openai' | 'anthropic';
+    if (agent.model.startsWith('gpt')) {
+      serviceType = 'openai';
+    } else if (agent.model.startsWith('claude')) {
+      serviceType = 'anthropic';
+    } else {
+      // Handle unknown model type or agent not found
+      return { error: agent ? `Unsupported model type: ${agent.model}` : "Agent not found" };
+    }
+    
+    const connection = await getApiConnectionByService(session.user.id, serviceType);
+
+    if (!connection) {
+      return { error: `API connection not found for ${serviceType}.` };
+    }
+
+    // Construct the full message list for sendMessageToAI
+    // Prepend history, add current user message
+    const currentMessage: Message = { role: 'user', content: messageContent };
+    const messagesToSend: Message[] = [
+      ...messageHistory,
+      currentMessage
+    ];
+
+    console.log("[sendMessage Action] Sending messagesToAI:", JSON.stringify(messagesToSend, null, 2));
+
+    // Call the sendMessageToAI function which handles system prompts and service creation
+    const response = await sendMessageToAI(
+      agent,
+      messagesToSend,
+      connection.encryptedApiKey
+    );
+
+    // Assuming sendMessageToAI returns AIResponse { content: string }
+    return {
+      id: nanoid(),
+      role: 'assistant',
+      content: response.content,
+    };
+
+  } catch (error) {
+    console.error("Error in sendMessage action:", error);
+    return {
+      error: error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 };

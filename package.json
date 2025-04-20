@@ -15,6 +15,7 @@
     "test:ci": "vitest run --typecheck",
     "test:all": "npm run typecheck && npm run lint && npm run test && npm run check-edge",
     "test:edge": "vitest run tests/edge-runtime.test.ts",
+    "test:api": "vitest run --typecheck --pool=forks tests/integration/api/",
     "test:ga": "vitest run --typecheck --pool=forks tests/unit/analytics/google-analytics*.unit.test.* tests/unit/analytics/page-view-tracker.unit.test.tsx tests/integration/analytics/google-analytics*.integration.test.*",
     "test:ga:build": "RUN_BUILD_TESTS=true vitest run --typecheck --pool=forks tests/integration/analytics/google-analytics-build.integration.test.ts",
     "test:ga:deployment": "RUN_DEPLOYMENT_TESTS=true vitest run --typecheck --pool=forks tests/integration/analytics/google-analytics-deployment.integration.test.ts",

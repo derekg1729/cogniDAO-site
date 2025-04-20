@@ -58,8 +58,12 @@ describe('useChat Hook', () => {
       content: 'Hello, world!',
     });
     
-    // Check if sendMessage was called with correct arguments
-    expect(sendMessage).toHaveBeenCalledWith(mockAgentId, 'Hello, world!');
+    // Check if sendMessage was called with correct arguments and empty history initially
+    expect(sendMessage).toHaveBeenCalledWith(
+      mockAgentId, 
+      'Hello, world!', 
+      [] // Expect empty history on first call
+    );
     
     // Check if input was cleared
     expect(result.current.input).toBe('');
@@ -148,5 +152,50 @@ describe('useChat Hook', () => {
     
     // Check that sendMessage was not called
     expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('passes message history to sendMessage on subsequent calls', async () => {
+    const { result } = renderHook(() => useChat(mockAgentId));
+    const firstUserMessage = 'First message';
+    const firstAssistantResponse = { id: 'assist-1', role: 'assistant' as const, content: 'First response' };
+    const secondUserMessage = 'Second message';
+
+    // Mock the first response
+    vi.mocked(sendMessage).mockResolvedValueOnce(firstAssistantResponse);
+
+    // --- First interaction ---
+    // Set input
+    act(() => {
+      result.current.setInput(firstUserMessage);
+    });
+    // Submit the message
+    await act(async () => {
+      await result.current.handleSubmit(new Event('submit') as any);
+    });
+
+    // --- Second interaction ---
+    // Set input for the second message
+    act(() => {
+      result.current.setInput(secondUserMessage);
+    });
+    // Submit the second message
+    await act(async () => {
+      // Mock response for the second call if needed, or keep the default mock
+      await result.current.handleSubmit(new Event('submit') as any);
+    });
+
+    // Assert sendMessage was called twice
+    expect(sendMessage).toHaveBeenCalledTimes(2);
+
+    // Assert the second call to sendMessage includes the history
+    const expectedHistory = [
+      { role: 'user', content: firstUserMessage },
+      { role: 'assistant', content: firstAssistantResponse.content },
+    ];
+    expect(vi.mocked(sendMessage).mock.calls[1]).toEqual([
+      mockAgentId,
+      secondUserMessage,
+      expectedHistory, // Expect history from the first interaction
+    ]);
   });
 }); 

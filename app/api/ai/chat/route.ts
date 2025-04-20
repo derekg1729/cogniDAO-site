@@ -1,6 +1,9 @@
 // import { openai } from '@ai-sdk/openai';
 import type { ChatRequest } from '@/schemas/chatrequest';
 import { createChatRequest, validateChatRequest } from '@/utils/validateInput';
+// New imports for the complete request schema and history messages
+import type { CompleteQueryRequest } from '@/schemas/completequeryrequest';
+import type { HistoryMessage } from '@/schemas/historymessage';
 
 /**
  * Chat API Route
@@ -19,6 +22,7 @@ export async function POST(req: Request) {
     // Parse the request
     const clonedReq = req.clone();
     const rawBody = await clonedReq.text();
+    console.log('[Chat API] Received raw body:', rawBody); // Log raw body
     
     // Parse the JSON manually with error handling
     let body;
@@ -29,39 +33,48 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 });
     }
     
-    // Create a validated ChatRequest object
-    let requestBody: ChatRequest;
-    
-    // Check if the body already matches the ChatRequest format
-    if (body.message && typeof body.message === 'string') {
-      try {
-        // Validate and create using utility function
-        requestBody = createChatRequest(body.message, { stream: body.stream });
-      } catch (e) {
-        console.error("Validation error:", e);
-        return Response.json({ error: 'Invalid request format' }, { status: 400 });
-      }
-    } else if (body.messages && Array.isArray(body.messages) && body.messages.length > 0) {
-      // Extract from messages array format
+    console.log('[Chat API] Parsed request body:', body); // Log parsed body
+
+    // Construct the payload for FastAPI based on CompleteQueryRequest schema
+    let fastApiPayload: Partial<CompleteQueryRequest> = {};
+    let messageHistory: HistoryMessage[] = [];
+    let currentMessage: string | undefined;
+
+    if (body.messages && Array.isArray(body.messages) && body.messages.length > 0) {
+      // If 'messages' array exists, use it for history and extract the last message
+      messageHistory = body.messages.slice(0, -1).map((msg: any) => ({
+        role: msg.role || 'user', // Assign default role if missing
+        content: msg.content || msg.text || '',
+      }));
       const lastMessage = body.messages[body.messages.length - 1];
-      const messageText = lastMessage.content || lastMessage.text || '';
-      
-      if (!messageText) {
-        return Response.json({ error: 'No message content found' }, { status: 400 });
-      }
-      
-      try {
-        // Validate and create using utility function
-        requestBody = createChatRequest(messageText, { stream: body.stream });
-      } catch (e) {
-        console.error("Validation error:", e);
-        return Response.json({ error: 'Invalid request format' }, { status: 400 });
-      }
-    } else {
-      // No valid format found
-      console.error("No valid message found in request");
+      currentMessage = lastMessage.content || lastMessage.text;
+
+    } else if (body.message && typeof body.message === 'string') {
+      // If only 'message' exists, use it as the current message
+      currentMessage = body.message;
+      // Potentially add logic here if the frontend might send history separately
+    }
+
+    if (!currentMessage) {
+      console.error("No current message content found in request");
       return Response.json({ error: 'No message provided' }, { status: 400 });
     }
+
+    fastApiPayload = {
+      message: currentMessage,
+      message_history: messageHistory.length > 0 ? messageHistory : null, // Send null if no history
+      // Include other potential fields from body if needed (model, temperature, etc.)
+      model: body.model,
+      temperature: body.temperature,
+      system_message: body.system_message,
+      // stream: body.stream // Assuming stream is handled separately or implicitly by FastAPI
+    };
+    
+    // Optional: Add validation using Ajv if needed later
+    // const errors = validateCompleteQueryRequest(fastApiPayload); // Assuming such a validator exists
+    // if (errors) { ... handle validation errors ... }
+
+    console.log('[Chat API] Sending payload to FastAPI:', JSON.stringify(fastApiPayload, null, 2)); // Log payload being sent
 
     // Try to connect to FastAPI backend
     let response;
@@ -73,7 +86,7 @@ export async function POST(req: Request) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.COGNI_HOME_API_KEY || 'dev-key'}`
         },
-        body: JSON.stringify({ message: requestBody.message }),
+        body: JSON.stringify(fastApiPayload), // Send the complete payload
       });
     } catch (error) {
       console.error(
@@ -81,6 +94,7 @@ export async function POST(req: Request) {
         error
       );
       console.log("Using fallback response due to connection error."); // Keep this for clarity
+      console.log('[Chat API] Initiating fallback response stream.'); // Log fallback initiation
 
       // Create a simple text stream for the response
       const { readable, writable } = new TransformStream();
@@ -105,6 +119,8 @@ export async function POST(req: Request) {
         await writer.close();
       })();
       
+      console.log('[Chat API] Returning stream response.'); // Log returning stream
+
       return new Response(readable, {
         headers: {
           'Content-Type': 'text/event-stream',
@@ -147,6 +163,8 @@ export async function POST(req: Request) {
       }
     })();
     
+    console.log('[Chat API] Returning stream response.'); // Log returning stream
+
     return new Response(readable, {
       headers: {
         'Content-Type': 'text/event-stream',
@@ -155,7 +173,8 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    console.error("Error in API route:", error);
+    console.error("Error in API route:", error); // Existing error log
+    console.error('[Chat API] Top-level error caught:', error); // Added more context
     return Response.json({ error: 'An error occurred', details: String(error) }, { status: 500 });
   }
 }
