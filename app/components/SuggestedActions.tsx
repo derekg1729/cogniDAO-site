@@ -9,6 +9,7 @@ interface SuggestedActionsProps {
 }
 
 function PureSuggestedActions({ onSuggestionClick }: SuggestedActionsProps) {
+  console.log("[SuggestedActions] Rendering component.");
   const suggestedActions = [
     {
       title: 'What is',
@@ -44,7 +45,6 @@ function PureSuggestedActions({ onSuggestionClick }: SuggestedActionsProps) {
           exit={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.05 * index }}
           key={`suggested-action-${suggestedAction.title}-${index}`}
-          className={index > 1 ? 'hidden sm:block' : 'block'}
         >
           <Button
             variant="ghost"
