@@ -26,7 +26,7 @@ const CONSISTENT_VARIABLES = [
 // Variables required in all environments
 const REQUIRED_VARIABLES = [
   'NEXT_PUBLIC_ROOT_DOMAIN',
-  'NEXTAUTH_SECRET',
+  'AUTH_SECRET',
   'AUTH_GITHUB_ID',
   'AUTH_GITHUB_SECRET',
   'DATABASE_URL',
