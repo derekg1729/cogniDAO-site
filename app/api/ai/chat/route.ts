@@ -76,7 +76,12 @@ export async function POST(req: Request) {
         body: JSON.stringify({ message: requestBody.message }),
       });
     } catch (error) {
-      console.log("Error connecting to FastAPI backend, using fallback response");
+      console.error(
+        `Error connecting to FastAPI backend at ${process.env.FASTAPI_URL}/chat:`, 
+        error
+      );
+      console.log("Using fallback response due to connection error."); // Keep this for clarity
+
       // Create a simple text stream for the response
       const { readable, writable } = new TransformStream();
       const writer = writable.getWriter();
