@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai';
+// import { openai } from '@ai-sdk/openai';
 import type { ChatRequest } from '@/schemas/chatrequest';
 import { createChatRequest, validateChatRequest } from '@/utils/validateInput';
 
@@ -63,15 +63,51 @@ export async function POST(req: Request) {
       return Response.json({ error: 'No message provided' }, { status: 400 });
     }
 
-    // Forward message to FastAPI with the correct schema
-    const response = await fetch('http://localhost:8000/chat', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.COGNI_HOME_API_KEY}`
-      },
-      body: JSON.stringify({ message: requestBody.message }),
-    });
+    // Try to connect to FastAPI backend
+    let response;
+    try {
+      const fastapiUrl = process.env.FASTAPI_URL || 'http://localhost:8000'; // Fallback for safety
+      response = await fetch(`${fastapiUrl}/chat`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.COGNI_HOME_API_KEY || 'dev-key'}`
+        },
+        body: JSON.stringify({ message: requestBody.message }),
+      });
+    } catch (error) {
+      console.log("Error connecting to FastAPI backend, using fallback response");
+      // Create a simple text stream for the response
+      const { readable, writable } = new TransformStream();
+      const writer = writable.getWriter();
+      
+      // Simulate a streaming response with a simple message
+      (async () => {
+        const encoder = new TextEncoder();
+        const fallbackResponses = [
+          "I'm sorry, but I'm currently unable to connect to my knowledge base. ",
+          "This is a fallback response. ",
+          "In normal operation, I would be able to provide more accurate information about CogniDAO and related topics. ",
+          "Please check that the backend service is running or try again later."
+        ];
+        
+        for (const part of fallbackResponses) {
+          await writer.write(encoder.encode(part));
+          // Add a small delay to simulate streaming
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
+        await writer.close();
+      })();
+      
+      return new Response(readable, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`FastAPI error: ${response.status}`);
