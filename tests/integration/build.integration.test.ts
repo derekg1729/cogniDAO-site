@@ -17,7 +17,7 @@ describe.skip('Build Prerequisites', { timeout: 60000 }, () => {
         'DATABASE_URL_UNPOOLED',
         
         // NextAuth Configuration
-        'NEXTAUTH_SECRET',
+        'AUTH_SECRET',
         
         // Domain Configuration
         'NEXT_PUBLIC_ROOT_DOMAIN',

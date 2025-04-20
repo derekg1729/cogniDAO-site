@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+{
+  "name": "Use Typed + Validated Schemas for All AI Inputs",
+  "description": "All data sent to or received from backend/AI APIs must use generated TypeScript types and optionally validate against corresponding JSON Schemas.",
+  "when_to_apply": [
+    "Sending a payload to an AI API route",
+    "Consuming an AI-generated or streamed response",
+    "Constructing or validating a ChatRequest"
+  ],
+  "actions": [
+    {
+      "target": "API request payloads",
+      "require": "Import generated types from `schemas/*.d.ts` and construct using helpers like `createChatRequest()`"
+    },
+    {
+      "target": "Optional runtime validation",
+      "require": "Use `validateChatRequest()` from `utils/validateInput.ts` to ensure shape matches JSON Schema"
+    }
+  ],
+  "tools": {
+    "Type-safe types": "Generated with `json-schema-to-typescript` into `schemas/*.d.ts`",
+    "Runtime validation": {
+      "tool": "ajv",
+      "helper": "validateInput.ts",
+      "input": ".schema.json files"
+    }
+  },
+  "rules": [
+    "Never construct AI request objects manually — use `createChatRequest()`",
+    "Only commit `.d.ts` files into the frontend repo — `.schema.json` is optional and only if ajv is used",
+    "If schema changes in backend, rerun schema sync and replace local definitions"
+  ]
+}

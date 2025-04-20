@@ -3,12 +3,16 @@
 import { sendMessage } from '@/lib/actions';
 import { useState, FormEvent, useRef } from 'react';
 import { nanoid } from 'nanoid';
-
+// Use the Message type from ai-service if it's compatible, or define a local one if needed
+// For now, assume HistoryMessage format is needed by the hook/UI
 interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system' | 'error';
   content: string;
 }
+
+// Import the type expected by sendMessage (from ai-service)
+import type { Message as ActionMessage } from '@/lib/ai-service';
 
 /**
  * Hook for managing chat state and interactions with an agent
@@ -53,8 +57,25 @@ export default function useChat(agentId: string) {
     setIsLoading(true);
 
     try {
-      // Send the message to the agent
-      const response = await sendMessage(agentId, userMessage.content);
+      // Prepare message history for the action INCLUDING the new user message
+      const messagesWithNewUserMessage = [
+        ...messages, // Current messages state
+        userMessage  // The user message we just created
+      ];
+
+      const historyForAction: ActionMessage[] = messagesWithNewUserMessage
+        .filter(msg => msg.role === 'user' || msg.role === 'assistant') // Only user/assistant messages
+        .map(({ role, content }) => ({ role, content })); // Map to {role, content}
+
+      // Remove the *last* message (the one currently being sent) from the history payload
+      const historyToSend = historyForAction.slice(0, -1);
+
+      // Send the message to the agent, including the correctly prepared history
+      const response = await sendMessage(
+        agentId, 
+        userMessage.content, // Send only the content of the current message
+        historyToSend      // Pass the history EXCLUDING the current message
+      );
       
       // Check for errors
       if ('error' in response) {
@@ -72,7 +93,7 @@ export default function useChat(agentId: string) {
         ]);
         
         // Set the error state
-        setError(errorMessage);
+        setError(errorMessage ?? null);
         return;
       }
       

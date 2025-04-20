@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+{
+  "rule_name": "bias_towards_researching_with_tools",
+  "description": "Guidance on searching for information and when to consult the user.",
+  "how_to_search_for_answers": {
+    "general_principle": "Always start with research tools. Understand the codebase. Ask questions to clarify intent of a task. Research deeply Undattempt to find answers using the available tools first. Provide a summary of findings and propose the best course of action.",
+    "when_to_consult_user": [
+      "To clarify the specific intention behind a request if it's ambiguous.",
+      "To get input on choosing between different valid approaches or tradeoffs (e.g., performance vs. simplicity).",
+      "If multiple search attempts with different tools fail to yield relevant information or a clear path forward."
+    ],
+    "available_tools": {
+      "tools_to_search_the_internet": [
+        {
+          "name": "General Web Search",
+          "description": "Use for general programming questions, library documentation, error messages, or conceptual understanding.",
+          "tool_reference": "[Placeholder - No direct web search tool available]"
+        }
+      ],
+      "tools_to_search_this_codebase": [
+        {
+          "name": "Semantic Search",
+          "description": "Finds code snippets semantically similar to a natural language query. Useful for finding code related to a concept or functionality even if you don't know the exact names or implementation details.",
+          "tool_reference": "codebase_search"
+        },
+        {
+          "name": "Text/Regex Search",
+          "description": "Finds exact text matches or regular expression patterns within files. Best for locating specific variable names, function calls, strings, or known code patterns.",
+          "tool_reference": "grep_search"
+        },
+        {
+          "name": "File Path Search",
+          "description": "Finds files based on fuzzy matching against the file path. Use when you know part of a filename or path but not its exact location.",
+          "tool_reference": "file_search"
+        }
+      ]
+    }
+  }
+}
