@@ -27,15 +27,15 @@ export default function HomePage() {
           <Chat />
         </div>
         
-        {/* Feature Sections - Hidden on mobile, visible on larger screens */}
-        <div className="hidden md:block w-full max-w-6xl mt-16 space-y-12">
+        {/* Feature Sections - Visible on all screens */}
+        <div className="w-full max-w-6xl mt-16 space-y-12">
           {/* CogniDAO Pillars Section */}
           <div className="border-t border-blue-500/20 pt-8">
             <h2 className="font-cal text-2xl font-bold text-blue-400 mb-6 text-center">
               CogniDAO Pillars
             </h2>
             
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
               <div className="rounded-lg border border-blue-500/30 bg-blue-900/10 p-4 backdrop-blur-sm transition-all hover:bg-blue-900/20 hover:border-blue-400/50">
                 <h3 className="font-cal text-lg text-blue-300 mb-2">AI Co-Governance</h3>
                 <p className="text-gray-400 text-sm">
@@ -64,7 +64,7 @@ export default function HomePage() {
             </h2>
             
             {/* Feature Cards - More compact */}
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
               <div className="rounded-lg border border-violet-500/30 bg-violet-900/10 p-4 backdrop-blur-sm transition-all hover:bg-violet-900/20 hover:border-violet-400/50">
                 <h3 className="font-cal text-lg text-violet-300 mb-2">Fair Contribution</h3>
                 <p className="text-gray-400 text-sm">

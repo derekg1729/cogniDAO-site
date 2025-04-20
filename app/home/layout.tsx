@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CogniDAO - Knowledge Collective",
     description: "Join the knowledge collective for community-driven insights and collaborative knowledge sharing.",
-    url: "https://wackywavelength.fyi",
+    url: "https://cognidao.org",
     siteName: "CogniDAO",
   },
   twitter: {

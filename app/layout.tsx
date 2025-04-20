@@ -16,7 +16,7 @@ const image = "https://vercel.pub/thumbnail.png";
 export const metadata: Metadata = {
   title,
   description,
-  icons: ["public/favicon.ico"],
+  icons: ["/favicon.ico"],
   openGraph: {
     title,
     description,
