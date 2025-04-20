@@ -93,7 +93,7 @@ export default function useChat(agentId: string) {
         ]);
         
         // Set the error state
-        setError(errorMessage);
+        setError(errorMessage ?? null);
         return;
       }
       

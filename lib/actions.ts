@@ -531,19 +531,19 @@ export const getAgent = async (id: string) => {
 export const sendMessage = async (
   agentId: string, 
   messageContent: string,
-  messageHistory: Message[]
+  messageHistory?: Message[]
 ) => {
-  const session = await getSession();
-  if (!session?.user.id) {
-    return {
-      error: "Not authenticated",
-    };
-  }
-
-  console.log("[sendMessage Action] Received messageContent:", messageContent);
-  console.log("[sendMessage Action] Received messageHistory:", JSON.stringify(messageHistory, null, 2));
-
   try {
+    const session = await getSession();
+    if (!session?.user.id) {
+      return {
+        error: "Not authenticated",
+      };
+    }
+
+    console.log("[sendMessage Action] Received messageContent:", messageContent);
+    console.log("[sendMessage Action] Received messageHistory:", JSON.stringify(messageHistory, null, 2));
+
     // Get agent details and API connection
     const agent = await getAgent(agentId);
 
@@ -568,19 +568,31 @@ export const sendMessage = async (
       return { error: `API connection not found for ${serviceType}.` };
     }
 
+    // Use messageHistory, defaulting to an empty array if it's undefined
+    const history = messageHistory ?? [];
+    
+    // Log the potentially defaulted history
+    console.log("[sendMessage Action] Using messageHistory:", JSON.stringify(history, null, 2));
+
     // Construct the full message list for sendMessageToAI
     // Prepend history, add current user message
     const currentMessage: Message = { role: 'user', content: messageContent };
     const messagesToSend: Message[] = [
-      ...messageHistory,
+      ...history, 
       currentMessage
     ];
 
     console.log("[sendMessage Action] Sending messagesToAI:", JSON.stringify(messagesToSend, null, 2));
 
+    // Prepare the agent object for sendMessageToAI, ensuring instructions is string | undefined
+    const agentForAI = {
+      ...agent,
+      instructions: agent.instructions ?? undefined, // Convert null instructions to undefined
+    };
+
     // Call the sendMessageToAI function which handles system prompts and service creation
     const response = await sendMessageToAI(
-      agent,
+      agentForAI, 
       messagesToSend,
       connection.encryptedApiKey
     );
