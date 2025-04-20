@@ -29,95 +29,87 @@ export default function HomePage() {
         
         {/* Feature Sections - Hidden on mobile, visible on larger screens */}
         <div className="hidden md:block w-full max-w-6xl mt-16 space-y-12">
-          {/* AI Development Enhancements Section */}
+          {/* CogniDAO Pillars Section */}
           <div className="border-t border-blue-500/20 pt-8">
             <h2 className="font-cal text-2xl font-bold text-blue-400 mb-6 text-center">
-              AI Development Enhancements
+              CogniDAO Pillars
             </h2>
             
             <div className="grid gap-4 md:grid-cols-3">
               <div className="rounded-lg border border-blue-500/30 bg-blue-900/10 p-4 backdrop-blur-sm transition-all hover:bg-blue-900/20 hover:border-blue-400/50">
-                <h3 className="font-cal text-lg text-blue-300 mb-2">CursorRules</h3>
+                <h3 className="font-cal text-lg text-blue-300 mb-2">AI Co-Governance</h3>
                 <p className="text-gray-400 text-sm">
-                  Structured project metadata that guides AI-assisted development
+                  AI stewards guide, enforce, and manage, with transparent human oversight.
                 </p>
               </div>
               <div className="rounded-lg border border-blue-500/30 bg-blue-900/10 p-4 backdrop-blur-sm transition-all hover:bg-blue-900/20 hover:border-blue-400/50">
-                <h3 className="font-cal text-lg text-blue-300 mb-2">Test-Driven Development</h3>
+                <h3 className="font-cal text-lg text-blue-300 mb-2">Open Core Infrastructure</h3>
                 <p className="text-gray-400 text-sm">
-                  Comprehensive test infrastructure with clear TDD workflow
+                  Shared, modular tools empowering niche communities to launch and thrive.
                 </p>
               </div>
               <div className="rounded-lg border border-blue-500/30 bg-blue-900/10 p-4 backdrop-blur-sm transition-all hover:bg-blue-900/20 hover:border-blue-400/50">
-                <h3 className="font-cal text-lg text-blue-300 mb-2">Pre-commit Guardrails</h3>
+                <h3 className="font-cal text-lg text-blue-300 mb-2">Empowerment & Open Knowledge</h3>
                 <p className="text-gray-400 text-sm">
-                  Automated checks for environment variables and code quality
+                  Building the Intelligence Commons through accessible knowledge graphs.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Systematic Development Workflow Section */}
+          {/* Operating Principles Section */}
           <div className="border-t border-violet-500/20 pt-8">
             <h2 className="font-cal text-2xl font-bold text-violet-400 mb-6 text-center">
-              Systematic Development Workflow
+              Operating Principles
             </h2>
             
             {/* Feature Cards - More compact */}
             <div className="grid gap-4 md:grid-cols-4">
               <div className="rounded-lg border border-violet-500/30 bg-violet-900/10 p-4 backdrop-blur-sm transition-all hover:bg-violet-900/20 hover:border-violet-400/50">
-                <h3 className="font-cal text-lg text-violet-300 mb-2">Workflow Automation</h3>
+                <h3 className="font-cal text-lg text-violet-300 mb-2">Fair Contribution</h3>
                 <p className="text-gray-400 text-sm">
-                  Self-sustaining development process
+                  AI-assisted valuation and rewards for all contributions.
                 </p>
               </div>
               <div className="rounded-lg border border-violet-500/30 bg-violet-900/10 p-4 backdrop-blur-sm transition-all hover:bg-violet-900/20 hover:border-violet-400/50">
-                <h3 className="font-cal text-lg text-violet-300 mb-2">Quality Gates</h3>
+                <h3 className="font-cal text-lg text-violet-300 mb-2">Ethical Monetization</h3>
                 <p className="text-gray-400 text-sm">
-                  Built-in quality checks at each stage
+                  Free core access, fair value for advanced features.
                 </p>
               </div>
               <div className="rounded-lg border border-violet-500/30 bg-violet-900/10 p-4 backdrop-blur-sm transition-all hover:bg-violet-900/20 hover:border-violet-400/50">
-                <h3 className="font-cal text-lg text-violet-300 mb-2">Error Recovery</h3>
+                <h3 className="font-cal text-lg text-violet-300 mb-2">Live Roadmaps</h3>
                 <p className="text-gray-400 text-sm">
-                  Robust error handling mechanisms
+                  Transparent, community-driven prioritization via graphs.
                 </p>
               </div>
               <div className="rounded-lg border border-violet-500/30 bg-violet-900/10 p-4 backdrop-blur-sm transition-all hover:bg-violet-900/20 hover:border-violet-400/50">
-                <h3 className="font-cal text-lg text-violet-300 mb-2">Documentation</h3>
+                <h3 className="font-cal text-lg text-violet-300 mb-2">Integrity & Depth</h3>
                 <p className="text-gray-400 text-sm">
-                  Seamless integration with docs
+                  Building with care, clarity, and long-term vision.
                 </p>
               </div>
             </div>
           </div>
           
-          {/* Documentation Links - More subtle */}
+          {/* CogniDAO Links */}
           <div className="pt-6 pb-8">
             <div className="flex flex-wrap gap-3 justify-center">
               <a
-                href="https://github.com/derekg1729/agent-platform/blob/main/docs/systematic-dev/README.md"
+                href="https://github.com/derekg1729/CogniDAO"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded border border-gray-700 bg-gray-900/30 px-4 py-2 text-sm text-gray-300 transition-all hover:bg-gray-800 hover:text-white"
               >
-                Framework Overview
+                Cogni Core Source
               </a>
               <a
-                href="https://github.com/derekg1729/agent-platform/blob/main/docs/systematic-dev/workflow.md"
+                href="https://github.com/derekg1729/cogniDAO-site"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded border border-gray-700 bg-gray-900/30 px-4 py-2 text-sm text-gray-300 transition-all hover:bg-gray-800 hover:text-white"
               >
-                Workflow Docs
-              </a>
-              <a
-                href="https://github.com/derekg1729/agent-platform/blob/main/docs/systematic-dev/project-description.md"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded border border-gray-700 bg-gray-900/30 px-4 py-2 text-sm text-gray-300 transition-all hover:bg-gray-800 hover:text-white"
-              >
-                Project Description
+                Cogni Site source
               </a>
             </div>
           </div>
