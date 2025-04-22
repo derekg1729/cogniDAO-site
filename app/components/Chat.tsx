@@ -49,7 +49,7 @@ export default function Chat() {
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      textareaRef.current.style.height = '40px';
     }
   };
 
@@ -244,7 +244,7 @@ export default function Chat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Send a message..."
-            className="resize-none min-h-[56px] max-h-[200px] pr-12 bg-gray-900 border-gray-700 rounded-full py-3.5 px-4 text-white placeholder:text-gray-400 focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
+            className="resize-none min-h-[40px] max-h-[40px] pr-12 bg-gray-900 border-gray-700 rounded-full py-2 px-4 text-white placeholder:text-gray-400 focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
             disabled={isStreaming}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -256,7 +256,7 @@ export default function Chat() {
             }}
           />
           
-          <div className="absolute right-3 bottom-[13px]">
+          <div className="absolute right-3 bottom-[5px]">
             {isStreaming ? (
               <Button
                 type="button"
